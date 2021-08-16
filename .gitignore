@@ -1,0 +1,10 @@
+node_modules
+dist
+test/unit/coverage/
+.vscode
+.firebase
+sh.exe.stackdump
+firebase-debug.log
+.DS_Store
+labels*.xlsx
+

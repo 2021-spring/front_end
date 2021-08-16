@@ -1,0 +1,173 @@
+import Order from './Order'
+
+export default class EbayOrder extends Order {
+  static fields () {
+    return {
+      platform: this.string('eBay'),
+      eBayPlus: this.boolean(false),
+
+      salesRecordNumber: this.string(''),
+      buyerUsername: this.string(''),
+      BuyerAddress1: this.string(''),
+      BuyerAddress2: this.string(''),
+      buyerCity: this.string(''),
+      buyerState: this.string(''),
+      buyerZip: this.string(''),
+      buyerCountry: this.string(''),
+      soldViaPromotedListings: this.string(''),
+      soldFor: this.string(''),
+      shippingAndHandling: this.string(''),
+      sellerCollectedTax: this.string(''),
+      eBayCollectTax: this.string(''),
+      electronicWasteRecyclingFee: this.string(''),
+      mattressRecyclingFee: this.string(''),
+      additionalFee: this.string(''),
+      totalPrice: this.string(''),
+      eBayCollectedTaxAndFeesIncludedInTotal: this.string(''),
+      paymentMethod: this.string(''),
+      minimumEstimatedDeliveryDate: this.string(''),
+      maximumEstimatedDeliveryDate: this.string(''),
+      shipDate: this.string(''),
+      feedbackLeft: this.string(''),
+      feedbackReceived: this.string(''),
+      myItemNote: this.string(''),
+      payPalTransactionID: this.string(''),
+      trackingNumber: this.string(''),
+      transactionID: this.string(''),
+      variationDetails: this.string(''),
+      globalShippingProgram: this.string(''),
+      globalShippingReferenceID: this.string(''),
+      clickAndCollect: this.string(''),
+      clickAndCollectReferenceNumber: this.string('')
+    }
+  }
+
+  static getFileHeader () {
+    return [
+      'Sales Record Number',
+      'Order Number',
+      'Buyer Username',
+      'Buyer Name',
+      'Buyer Email',
+      'Buyer Note',
+      'Buyer Address 1',
+      'Buyer Address 2',
+      'Buyer City',
+      'Buyer State',
+      'Buyer Zip',
+      'Buyer Country',
+      'Ship To Name',
+      'Ship To Phone',
+      'Ship To Address 1',
+      'Ship To Address 2',
+      'Ship To City',
+      'Ship To State',
+      'Ship To Zip',
+      'Ship To Country',
+      'Item Number',
+      'Item Title',
+      'Custom Label',
+      'Sold Via Promoted Listings',
+      'Quantity',
+      'Sold For',
+      'Shipping And Handling',
+      'Seller Collected Tax',
+      'eBay Collected Tax',
+      'Electronic Waste Recycling Fee',
+      'Mattress Recycling Fee',
+      'Additional Fee',
+      'Total Price',
+      'eBay Collected Tax and Fees Included in Total',
+      'Payment Method',
+      'Sale Date',
+      'Paid On Date',
+      'Ship By Date',
+      'Minimum Estimated Delivery Date',
+      'Maximum Estimated Delivery Date',
+      'Shipped On Date',
+      'Feedback Left',
+      'Feedback Received',
+      'My Item Note',
+      'PayPal Transaction ID',
+      'Shipping Service',
+      'Tracking Number',
+      'Transaction ID',
+      'Variation Details',
+      'Global Shipping Program',
+      'Global Shipping Reference ID',
+      'Click And Collect',
+      'Click And Collect Reference Number',
+      'eBay Plus'
+    ]
+  }
+
+  getItemNumberBySku (sku) {
+    const item = this.items.find(item => item.sku === sku)
+    if (!item) return sku
+    return item.itemNumber
+  }
+
+  getFileRows () {
+    return this.shipments.map(shipment => {
+      const product = (this.items.find(({orderItemId}) => orderItemId === shipment.orderItemId) || {})
+      return [
+        this.salesRecordNumber,
+        this.orderId,
+        this.buyerUsername,
+        this.buyerName,
+        this.buyerEmail,
+        this.buyerNote,
+        this.buyerAddress1,
+        this.buyerAddress2,
+        this.buyerCity,
+        this.buyerState,
+        this.buyerZip,
+        this.buyerCountry,
+        this.recipientName,
+        this.buyerPhoneNumber,
+        this.shipAddress1,
+        this.shipAddress2,
+        this.shipCity,
+        this.shipState,
+        this.shipPostalCode,
+        this.shipCountry,
+        this.getItemNumberBySku(shipment.orderItemId),
+        product.productName || '',
+        product.sku || '',
+        this.soldViaPromotedListings,
+        shipment.quantity,
+        this.soldFor,
+        this.shippingAndHandling,
+        this.sellerCollectedTax,
+        this.eBayCollectTax,
+        this.electronicWasteRecyclingFee,
+        this.mattressRecyclingFee,
+        this.additionalFee,
+        this.totalPrice,
+        this.eBayCollectedTaxAndFeesIncludedInTotal,
+        this.paymentMethod,
+        this.purchaseDate,
+        this.paymentDate,
+        this.promiseDate,
+        this.minimumEstimatedDeliveryDate,
+        this.maximumEstimatedDeliveryDate,
+        shipment.shipDate,
+        this.feedbackLeft,
+        this.feedbackReceived,
+        this.myItemNote,
+        this.payPalTransactionID,
+        this.shipServiceLevel,      
+        shipment.trackingNumber,
+        this.transactionID,
+        this.variationDetails,
+        this.globalShippingProgram,
+        this.globalShippingReferenceID,
+        this.clickAndCollect,
+        this.clickAndCollectReferenceNumber,
+        this.eBayPlus ? 'yes' : 'no'
+      ]
+    })
+  }
+
+  static fileType = 'csv'
+}

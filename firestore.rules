@@ -1,0 +1,247 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+    function isTenant(tenantKey) {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.organizations[0] == tenantKey;
+    }
+    
+    function isWarehouse(warehouseKey) {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.warehouses[0] == warehouseKey;
+    }
+    
+    //function isUser(userKey) {
+    //  return exists(/databases/$(database)/documents/users/$(userKey))
+    //  && get(/databases/$(database)/documents/users/$(userKey)).data.warehouses == null
+    //	&& get(/databases/$(database)/documents/users/$(userKey)).data.organizations == null;
+    //}
+    
+    function isLogin() {
+    	return request.auth.uid != null;
+    }
+		// billings collection group
+    match /{path=**}/billings/{billing} {
+      allow read, write: if isLogin();
+    }
+    // transfer transactions
+    match /{path=**}/transferTransactions/{transaction} {
+      allow read, write: if isLogin();
+    }
+    
+    // changeLogs
+    match /changeLogs {
+      allow read, create: if isLogin();
+      
+      match /{changeLogId} {
+        allow read, create: if isLogin();
+      }
+    }
+
+		// warehouseTransactions    
+    match /warehouseTransactions {
+      allow read, create: if isLogin();
+      
+      match /{changeLogId} {
+        allow read, create: if isLogin();
+      }
+    }
+
+    // archivedShipments: user can only read archived shipments
+    match /archivedShipments/{archivedShipmentsId} {
+      allow read, create, update: if isLogin();
+      allow delete: if false;
+    }
+
+    // balance: only user and tenant can write to the doc
+    match /balance/{balanceId} {
+      allow read, create: if isLogin();
+      allow update: if isLogin();
+      allow delete: if false;
+    }
+
+    // offers: login user can access the main doc.
+    match /offers/offers {
+      allow read, update, create: if isLogin();
+      allow delete: if false;
+
+      match /active/{activeId} {
+        allow read, write: if isLogin();
+      }
+
+      match /archives/{archiveId} {
+        allow read, create: if isLogin();
+        allow write: if isTenant(resource.data.tenantKey);
+      }
+
+      match /proposes/{proposeId} {
+        allow read, write: if isLogin();
+      }
+    }
+
+    // paymentRequest: only user and tenant can write to the doc
+    match /paymentRequest/{paymentRequestId} {
+      allow read, create: if isLogin();
+      allow update, delete: if isLogin();
+    }
+
+    // request: all login users can access to the doc
+    match /requests/{requestsId} {
+      allow read, write: if isLogin();
+    }
+
+    // joinWarehouseRequests: all login users can access to the doc
+    match /joinWarehouseRequests/{joinWarehouseRequestsId} {
+      allow read, write: if request.auth.uid != null;
+    }
+    
+    // reportLost: only user and tenant can write to the doc
+    match /reportLost/{reportLostId} {
+      allow read, write: if isLogin();
+    }
+    
+    // shipments: only user and tenant can write to the doc
+    match /shipments/{shipmentId} {
+      allow read, write: if isLogin();
+    }
+
+  	// only system admin can write to the doc itself
+    match /sysAdmin/general {
+      allow read: if isLogin();
+      allow write: if request.auth.token.email == resource.data.email;
+      
+      match /{document=**} {
+      	allow read, write: if isLogin();
+      }
+    }
+
+    // tasks: only user and tenant can write to the doc
+    match /tasks/tasks {
+      allow read, update, create: if isLogin();
+      allow delete: if isTenant(resource.data.tenantKey);
+
+      match /active/{activeId} {
+        allow read, create: if isLogin();
+        allow update, delete: if isLogin();
+      }
+    }
+    
+  	// only user can delete itself
+    match /users/{userId} {
+      allow read: if true;
+      allow update, create: if isLogin();
+      allow delete: if request.auth.uid == userId;
+      
+      match /{document=**} {
+      	allow read: if isLogin();
+        allow update, create: if isLogin();
+        allow delete: if request.auth.uid == userId;
+      }
+    }
+
+    // only user can delete itself
+    match /userLimitedInfo/{userLimitedInfoId} {
+      allow read, update, create: if isLogin();
+      allow delete: if request.auth.uid == userLimitedInfoId;
+            
+      match /{document=**} {
+      	allow read, write: if isLogin();
+      }
+    }
+    
+    // only tenant primary account to delete itself
+    match /tenants/{tenantId} {
+      allow read, update, create: if isLogin();
+      allow delete: if isTenant(tenantId);
+      
+      match /{document=**} {
+      	allow read: if true;
+        allow update, create: if isLogin();
+        allow delete: if isTenant(tenantId);
+      }
+    }
+
+    // only tenant primary account to delete itself
+    match /tenantLimitedInfo/{tenantLimitedInfoId} {
+      allow read, update, create: if isLogin();
+      allow delete: if isTenant(tenantLimitedInfoId);
+    }
+    
+    // no users is allowed to delete transaction
+    match /warehouses/{warehouseId} {
+      allow read, update, create: if isLogin();
+      allow delete: if isWarehouse(warehouseId);
+      
+      match /{document=**} {
+      	allow read, update, create: if isLogin();
+        allow delete: if isWarehouse(warehouseId);
+      }
+    }
+
+    // only tenant primary account to delete itself
+    match /warehouseLimitedInfo/{warehouseLimitedInfoId} {
+      allow read, update, create: if isLogin();
+      allow delete: if isWarehouse(warehouseLimitedInfoId);
+    }
+    
+    // no users is allowed to delete transaction
+    match /transaction/{transactionId} {
+      allow read, update, create: if isLogin();
+      allow delete: if false;
+    }
+    
+    // no users is allowed to delete transaction
+    match /joinWarehouseRequests/{requestId} {
+      allow read, create: if isLogin();
+      allow delete: if false;
+    }
+
+    match /announcements/{announcementId} {
+      allow read, update, create, delete: if isLogin();
+    }
+
+    match /supports/{supportId} {
+      allow read, create: if isLogin();
+      allow update, delete: if isLogin();
+    }
+
+    match /{document=**}/packages/{packageId} {
+      allow read, update, delete: if isLogin();
+    }
+
+    match /labels/{labelId} {
+      allow read, create: if isLogin();
+      allow update, delete: if isLogin();
+    }
+
+    match /skuRequests/{requestId} {
+      allow read, create: if isLogin();
+      allow update, delete: if isLogin();
+    }
+        
+    match /systemBalance/{balanceId} {
+      allow read, create: if isLogin();
+      allow update, delete: if isLogin();
+    }
+
+    match /systemTransactions/{transactionId} {
+      allow read, create: if isLogin();
+      allow update, delete: if isLogin();
+    }
+
+    match /eeiRecords/{transactionId} {
+      allow read, create: if isLogin();
+      allow update, delete: if isLogin();
+    }
+     
+    match /canceledTasks/{taskId} {
+      allow read, create: if isLogin();
+      allow update, delete: if isLogin();
+    }
+
+    match /sysAdmin/amazonSites {
+      allow read, create: if isLogin();
+      allow update, delete: if isLogin();
+    }
+  }
+}
