@@ -10,8 +10,10 @@ import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import {Logger} from '@/utils/tools'
 import linkify from 'vue-linkify'
-import firebase from 'firebase/app'
-import 'firebase/firestore'
+import firebase from 'firebase/compat/app'
+import 'firebase/compat/firestore'
+import 'firebase/compat/functions'
+import 'firebase/compat/auth'
 import {authMixin} from './router/functionalityAuth'
 
 Vue.use(Vuetify, {
@@ -41,11 +43,10 @@ var vm = new Vue({
   template: '<App/>',
   beforeCreate () {
     firebase.initializeApp(process.env.firebaseConfig)
-    if (process.env.NODE_ENV === 'production') {
-      firebase.firestore.setLogLevel('error')
-    } else if (process.env.functionPort) {
-      firebase.functions().useFunctionsEmulator(`http://localhost:${process.env.functionPort}`)
-    }
+    firebase.firestore().useEmulator('http://localhost', 8088)
+    firebase.functions().useEmulator('http://localhost', 5001)
+    firebase.auth().useEmulator('http://localhost', 9099)
+    console.log('')
     Logger.initialize(this.$store)
     this.$store.commit('setVersion', process.env.version)
     this.$store.commit('setEnvironment', process.env.NODE_ENV)

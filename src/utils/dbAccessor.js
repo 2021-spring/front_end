@@ -1,26 +1,13 @@
 // suffix "store" indicates opertation again firestore instead of firebase
 // suffix "RT" indicates get Realtime updates
 
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/firestore'
-import 'firebase/functions'
-import 'firebase/storage'
+import firebase from 'firebase/compat/app'
+import 'firebase/compat/auth'
+import 'firebase/compat/firestore'
+import 'firebase/compat/functions'
+import 'firebase/compat/storage'
 import { addNumbers, isDateEqual, getRandomIdByTime } from '../utils/tools'
 import pathUtil from 'path'
-/**
- * @typedef {firebase.firestore.QuerySnapshot} QuerySnapshot
- * @typedef {firebase.firestore.DocumentSnapshot} DocumentSnapshot
- * @typedef {firebase.firestore.Query} Query
- * 
- */
-
-/**
- * @typedef {Object} Predicate
- * @property {String} field
- * @property {firebase.firestore.WhereFilterOp} compare
- * @property {any} value
- */
 
 const dbAccessor = {
   updateFieldsStore: (payload, ...path) => {
@@ -135,7 +122,6 @@ function getNewDocumentKey (...path) {
   return this.buildStoreQuery(path).doc()
 }
 
-/** @returns {firebase.firestore.CollectionReference | firebase.firestore.DocumentReference} */
 function buildStoreQuery (path, orderBy, isDescending) {
   let query = path.reduce((previousValue, currentValue, currentIndex) => {
     return currentIndex % 2 === 0 ? previousValue.collection(currentValue) : previousValue.doc(currentValue)
@@ -144,7 +130,6 @@ function buildStoreQuery (path, orderBy, isDescending) {
   return query
 }
 
-/** @returns {firebase.firestore.Query} */
 function buildStoreQueryPredicates (query, predicates, orderBy, isDescending) {
   if (!predicates) { predicates = [] }
   query = predicates.reduce((previousValue, currentValue) => {
@@ -176,13 +161,11 @@ function queryStore (...path) {
   return runAndLog(query.get(), 'query firestore')
 }
 
-/** @returns {firebase.firestore.QuerySnapshot} */
 function queryCollectionGroup (predicates, path) {
   let query = buildStoreQueryPredicates(firebase.firestore().collectionGroup(path), predicates)
   return runAndLog(query.get(), 'query collection group')
 }
 
-/** @returns {firebase.firestore.QuerySnapshot} */
 function queryCollectionGroupWithPagination (predicates, path, orderBy, isDescending, startAfter, limit) {
   let query = buildStoreQueryPredicates(firebase.firestore().collectionGroup(path), predicates, orderBy, isDescending)
   startAfter && (query = query.startAfter(startAfter))
@@ -498,10 +481,6 @@ async function increaseValueAndDeleteDataInTransactionStore (field, increment, v
   return runAndLog(transac)
 }
 
-/**
- * 
- * @param {(transaction: firebase.firestore.Transaction) => void} func 
- */
 function runInTransactionStore (func) {
   let transac = firebase.firestore().runTransaction(transaction => {
     return func(transaction)
@@ -509,10 +488,6 @@ function runInTransactionStore (func) {
   return runAndLog(transac)
 }
 
-/**
- * 
- * @param {(batch: firebase.firestore.WriteBatch) => void} func 
- */
 function runInBatch (func) {
   let batch = firebase.firestore().batch()
   func(batch)

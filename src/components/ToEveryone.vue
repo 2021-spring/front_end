@@ -382,7 +382,7 @@ import LoaderButton from './LoaderButton'
 import SelectWidget from './SelectWidget'
 import { sortNoCase, checkRules, getRandomIdByTime } from '../utils/tools'
 import * as rules from '../utils/rules'
-import * as firebase from 'firebase/app'
+import firebase from 'firebase/compat/app'
 import LabelCreatePopup from './LabelCreatePopup'
 
 export default {
@@ -744,7 +744,7 @@ export default {
     },
     listenToFileUpload (file) {
       // Listen for state changes, errors, and completion of the upload.
-      file.task.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+      file.task.on(firebase.app().storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
         (snapshot) => {
           // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
           var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
