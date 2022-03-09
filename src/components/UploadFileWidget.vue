@@ -87,7 +87,8 @@
 </template>
 
 <script>
-import * as firebase from 'firebase/app'
+import firebase from 'firebase/compat/app'
+import 'firebase/compat/storage'
 import {imageResize} from '@/utils/tools'
 
 const STATUS = {
@@ -211,9 +212,6 @@ export default {
 
       return fileToCheck
     },
-    /**
-     * @param {{task: firebase.storage.UploadTask}} file
-     */
     listenToFileUpload (file) {
       // Listen for state changes, errors, and completion of the upload.
       file.task.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
