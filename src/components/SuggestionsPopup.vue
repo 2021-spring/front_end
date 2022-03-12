@@ -23,6 +23,13 @@
             :rules="[fieldIsRequired('email'), fieldIsEmail()]"
             class="required_field"></v-text-field>
         </v-flex>
+        <v-flex sm6 md4>
+          <v-text-field
+            label="Phone#"
+            v-model="phoneLocal"
+            :rules="[fieldIsRequired('phone#'), fieldIsPhone()]"
+            class="required_field"></v-text-field>
+        </v-flex>
         <v-flex>
           <v-textarea
             label="Suggestion"
@@ -51,7 +58,8 @@ export default {
     return {
       comment: '',
       emailLocal: '',
-      nameLocal: ''
+      nameLocal: '',
+      phoneLocal: ''
     }
   },
   mounted () {
@@ -66,6 +74,11 @@ export default {
     } else {
       this.nameLocal = this.name
     }
+    if (!this.phone) {
+      this.phoneLocal = ''
+    } else {
+      this.phoneLocal = this.phone
+    }
   },
   watch: {
     email (value) {
@@ -73,6 +86,9 @@ export default {
     },
     name (value) {
       this.nameLocal = this.name
+    },
+    phone (value) {
+      this.phoneLocal = this.phone
     }
   },
   methods: {
@@ -80,6 +96,7 @@ export default {
       let payload = {
         email: this.emailLocal,
         name: this.nameLocal,
+        phone: this.phoneLocal,
         comment: this.comment
       }
       this.actionMethod(payload)

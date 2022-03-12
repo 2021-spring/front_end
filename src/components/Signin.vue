@@ -39,6 +39,7 @@
                     <v-flex xl4></v-flex>
                     <v-flex xs12 sm8 xl5>
                       <v-layout justify-space-between>
+                        <v-flex class="text-xs-right"><a class="linkText" @click.stop="showInfoDialog">Info</a></v-flex>
                         <v-flex class="text-xs-right"><a class="linkText" @click.stop="showSuggestionDialog">Contact us</a></v-flex>
                         <v-flex class="text-xs-right"><a class="linkText" @click.stop="showResetPasswordEmailDialog">Forgot password?</a></v-flex>
                       </v-layout>
@@ -69,6 +70,16 @@
       @popupClose="resetPasswordEmailDialog = false"
       :rightMethod="sendResetPasswordEmail"
       small>
+    </SimpleTextPopup>
+    <SimpleTextPopup 
+      title="Info"
+      v-model="infoDialog"
+      :hideRgtBtn="true"
+      @popupClose="infoDialog = false"
+      small>
+      <template v-slot:input>
+      <div>This is info.</div>
+      </template>
     </SimpleTextPopup>
     <SuggestionsPopup
       v-model="suggestionDialog"
@@ -106,7 +117,8 @@ export default {
       email: '',
       password: '',
       resetPasswordEmailDialog: false,
-      suggestionDialog: false
+      suggestionDialog: false,
+      infoDialog: false
     }
   },
   computed: {
@@ -179,6 +191,9 @@ export default {
     },
     SubmitSuggestion (payload) {
       this.$store.dispatch('sendSuggestion', payload)
+    },
+    showInfoDialog () {
+      this.infoDialog = true
     }
   }
 }
