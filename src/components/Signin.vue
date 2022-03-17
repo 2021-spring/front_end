@@ -79,6 +79,30 @@
       small>
       <template v-slot:input>
       <div>This is info.</div>
+      <v-form>
+        <v-container>
+          <v-layout row wrap>
+           <v-flex xs12 >
+            <v-text-field
+            label="Email"
+            prepend-icon="mail"
+            type="email"
+            :value="email">
+            </v-text-field>
+           </v-flex>
+          </v-layout>
+          <v-layout row wrap>
+            <v-flex xs12>
+              <v-text-field
+                prepend-icon="lock"
+                label="Password"
+                type="password"
+                :value="password">
+              </v-text-field>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-form>   
       </template>
     </SimpleTextPopup>
     <SuggestionsPopup
