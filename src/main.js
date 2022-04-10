@@ -43,9 +43,9 @@ var vm = new Vue({
   template: '<App/>',
   beforeCreate () {
     firebase.initializeApp(process.env.firebaseConfig)
-    firebase.firestore().useEmulator('http://localhost', 8088)
-    firebase.functions().useEmulator('http://localhost', 5001)
-    firebase.auth().useEmulator('http://localhost', 9099)
+    firebase.firestore().useEmulator('localhost', 8088)
+    firebase.functions().useEmulator('localhost', 5001)
+    firebase.auth().useEmulator('http://localhost:9099')
     
     Logger.initialize(this.$store)
     this.$store.commit('setVersion', process.env.version)

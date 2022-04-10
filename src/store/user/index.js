@@ -138,7 +138,6 @@ export const actions = {
   signUserUp ({commit, dispatch}, payload) {
     commit('setLoading', true)
     commit('clearError')
-    payload.overrideKey = 'lkjwnlks23432lksdf$%^$'
     return dbAccessor.callFunction('signupUser', payload)
       .then(uid => {
         return dispatch('signUserIn', {email: payload.email, password: payload.password})
@@ -202,7 +201,6 @@ export const actions = {
     return dbAccessor.sendEmailVerification(payload)
   },
   finishEmailSignup ({commit, getters, dispatch}, payload) {
-    payload.email = dbAccessor.finishEmailSignup()
     if (payload.email) {
       return dispatch('signUserUp', payload)
     } else {
