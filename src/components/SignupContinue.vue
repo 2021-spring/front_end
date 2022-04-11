@@ -15,7 +15,7 @@
                   prepend-icon="mail"
                   label="Email"
                   v-model="email"
-                  disabled></v-text-field>
+                  ></v-text-field>
               </v-flex>
             </v-layout>
             <v-form ref="form" v-model="isValid" lazy-validation>
@@ -31,15 +31,6 @@
                     :rules="[rules.checkNullStr]"
                     clearable
                     class="required_field"></v-autocomplete>
-                </v-flex>
-                <v-flex md6>
-                  <v-text-field
-                    prepend-icon="vpn_key"
-                    label="Referral number"
-                    v-if="role === '0' || role === '2'"
-                    v-model="referralNum"
-                    :rules="[rules.checkNullStr]"
-                    class="required_field"></v-text-field>
                 </v-flex>
               </v-layout>
               <v-layout row wrap>
@@ -96,7 +87,7 @@
 import LoaderButton from './LoaderButton'
 
 export default {
-  name: 'SignupContinue',
+  name: 'Signup',
   components: {
     LoaderButton
   },
@@ -180,7 +171,7 @@ export default {
           name: this.name.trim(),
           password: this.password,
           role: parseInt(this.role),
-          referral: this.referralNum
+          email: this.email
         }
         return this.$store.dispatch('finishEmailSignup', payload)
       }

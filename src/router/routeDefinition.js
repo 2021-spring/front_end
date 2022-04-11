@@ -1,4 +1,3 @@
-import Signup from '@/components/Signup'
 import SignupContinue from '@/components/SignupContinue'
 import Signin from '@/components/Signin'
 import Upc from '@/components/Upc'
@@ -656,10 +655,6 @@ const routes = {
     component: Profile
   },
   signup: {
-    path: '/signup',
-    component: Signup
-  },
-  signupContinue: {
     path: '/signupContinue',
     component: SignupContinue
   },

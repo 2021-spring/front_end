@@ -163,7 +163,7 @@ export default {
       let menuItems = [
         {
           name: 'Signup',
-          link: '/signup',
+          link: '/signupContinue',
           isShownOnSmallDevices: true
         },
         {
